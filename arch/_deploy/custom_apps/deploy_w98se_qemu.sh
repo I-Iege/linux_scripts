@@ -3,116 +3,102 @@
 # A Simple Script for Arch-based Distros 
 # to Deploy Windows98SE with KVM/QEMU
 
+# Constants ################################################################
+os_name="w98se"
+vm_dir_name="$HOME/virtual_machines"
+os_dir_name="$vm_dir_name/$os_name"
+cd_file_name="$os_name.iso"
+floppy_file_name="boot_floppy.ima"
+hard_disk_name="$os_name.qcow2"
+cd_iso_url="https://archive.org/download/windows-98-se-isofile/"\
+"Windows%2098%20Second%20Edition.iso"
+floppy_url="https://github.com/JHRobotics/patcher9x/releases/"\
+"download/v0.8.50/patcher9x-0.8.50-boot.ima"
+############################################################################
 
-# Create Install Directories ###############################################
+
+# Create Install Directories ############################################### 
 clear
 echo -e "\033[32mDeploying Windows 98 SE Virtual Machine (QEMU) ...\033[0m"
-vm_dir_name="virtual_machines"
-os_dir_name="w98se"
-if [ ! -d "$vm_dir_name" ]; then
-	mkdir ~/$vm_dir_name
-	if [ ! -d "$os_dir_name" ]; then
-		mkdir ~/$vm_dir_name/$os_dir_name
-		echo -e "\033[32mInstall Folder created in: "\
-		"~/$vm_dir_name/$os_dir_name\033[0m"
-	else
-		echo -e "\033[33m~/$vm_dir_name/$os_dir_name"\ 
-		"already exists."
-	fi
+if [ ! -d "$os_dir_name" ]; then
+    mkdir -p "$os_dir_name"
+    echo -e "\033[32mDeploy folder created in: $os_dir_name\033[0m"
+else
+    echo -e "\033[33mFolder $os_dir_name already exists. "\
+"Skipping creation.\033[0m"
 fi
-cd ~/$vm_dir_name/$os_dir_name
+cd "$os_dir_name" || { echo "Failed to navigate to $os_dir_name"; exit 1; }
 ############################################################################
 
 
 # Download Win98SE CD Image ################################################
-cd_file_name="w98se.iso"
-download_url="https://archive.org/download/windows-98-se-isofile/"\
-"Windows%2098%20Second%20Edition.iso"
 if [ ! -f "$cd_file_name" ]; then
-    wget -nc --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64)" \
-         --header="Referer: https://archive.org/" \
-         --header="Accept: text/html,application/xhtml+xml,application/ \
-         xml;q=0.9,image/avif,image/webp,*/*;q=0.8" \
-         --header="Accept-Language: en-US,en;q=0.5" \
-         -O "$cd_file_name" "$download_url"
+    wget -nc -O "$cd_file_name" "$iso_download_url" && \
+    echo -e "\033[32mDownloaded $cd_file_name\033[0m" || \
+    echo -e "\033[31mFailed to download $cd_file_name\033[0m"
 else
-    echo -e "\033[33mFile '$cd_file_name' already exists." \
-		"Skipping Download.\033[0m"
+    echo -e "\033[33mFile '$cd_file_name' already exists. "\
+"Skipping download.\033[0m"
 fi
 ############################################################################
 
 
-# Download (Modified) Win98SE Boot Floppy Image ############################
-floppy_file_name="boot_floppy.ima"
-download_url="https://github.com/JHRobotics/patcher9x/releases/download/"\
-"v0.8.50/patcher9x-0.8.50-boot.ima"
+# Download Modified Win98SE Boot Floppy Image ##############################
 if [ ! -f "$floppy_file_name" ]; then
-    wget -nc --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64)" \
-         --header="Referer: https://archive.org/" \
-         --header="Accept: text/html,application/xhtml+xml,application/ \
-         xml;q=0.9,image/avif,image/webp,*/*;q=0.8" \
-         --header="Accept-Language: en-US,en;q=0.5" \
-         -O "$floppy_file_name" "$download_url"
+    wget -nc -O "$floppy_file_name" "$floppy_download_url" && \
+    echo -e "\033[32mDownloaded $floppy_file_name\033[0m" || \
+    echo -e "\033[31mFailed to download $floppy_file_name\033[0m"
 else
-    echo -e "\033[33mFile '$floppy_file_name' already exists." \
-		"Skipping Download.\033[0m"
+    echo -e "\033[33mFile '$floppy_file_name' already exists. "\
+"Skipping download.\033[0m"
 fi
 ############################################################################
 
 
-# Creating QEMU Image ######################################################
-hard_disk_name="w98se.qcw"
-if [ ! -f $hard_disk_name ]; then
-	qemu-img create -f qcow2 $hard_disk_name 4096M
+# Create QEMU Image ########################################################
+if [ ! -f "$hard_disk_name" ]; then
+    qemu-img create -f qcow2 "$hard_disk_name" 4G && \
+    echo -e "\033[32mCreated QEMU image $hard_disk_name\033[0m" || \
+    echo -e "\033[31mFailed to create QEMU image $hard_disk_name\033[0m"
 else
-  echo -e "\033[33mFile '$hard_disk_name' already exists." \
-		"Skipping Construction.\033[0m"
+    echo -e "\033[33mFile '$hard_disk_name' already exists."\
+"Skipping creation.\033[0m"
 fi
 ############################################################################
 
 
-# Configuring QEMU Image ###################################################
-#qemu-system-i386 -nodefaults -rtc base=localtime -display sdl \
-#-M pc,accel=kvm,hpet=off,usb=off -cpu host \
-#-device VGA -device lsi -device ac97 -audio pa,id=audio0 \
-#-netdev user,id=net0 -device pcnet,rombar=0,netdev=net0 \
-#-drive if=floppy,format=raw,file=$floppy_file_name \
-#-drive id=w98se,if=none,file=$hard_disk_name \
-#-device scsi-hd,drive=w98se -monitor tcp::1234,server,nowait \
-#-cdrom ~/$vm_dir_name/$install_dir_name/$cd_file_name -boot a &
+# Launch QEMU with Windows 98 SE ###########################################
+qemu-system-i386 -nodefaults -rtc base=localtime -display sdl \
+-M pc,accel=kvm,hpet=off,usb=off -cpu host -device VGA -device lsi \
+-audiodev alsa,id=audio0,out.frequency=44100,out.channels=2 \
+-netdev user,id=net0 -device pcnet,rombar=0,netdev=net0 \
+-drive if=floppy,format=raw,file="$floppy_file_name" \
+-drive id=w98se,if=none,file="$hard_disk_name" \
+-device scsi-hd,drive=w98se -monitor tcp::1234,server,nowait \
+-cdrom "$os_dir_name/$cd_file_name" -boot a &
 ############################################################################
 
 
 # Methods to communicate with the Guest OS #################################
 function send_char() {
-    echo "sendkey $1" | socat - TCP:localhost:1234
+    echo "sendkey '$1'" | socat - TCP:localhost:1234
 }
-function command() {
-    for ((i=0; i<${#1}; i++)); do
-        char="${1:i:1}"
-        if [[ "$char" == " " ]]; then
-            send_char "spc"
-	elif [[ "$char" == "." ]]; then
-            send_char "dot"
-        elif [[ "$char" == "\n" ]]; then
-            send_char "ret"
-        else
-            send_char "$char"
-        fi
-    done
+function send_string() {
+  local string="$1"
+
+  for char in $(echo "$string" | fold -w 1); do
+    if [[ "$char" == "\n" ]]; then
+      send_char "ret"
+    else
+      send_char "$char"
+    fi
+  done
 }
 ############################################################################
 
 
 # Creating Partition Table #################################################
-#partitioning_commands=( "\n; disk\n; \n; \n; \n" 
-#			"sleep 1; \n; esc; restart\n" 
-#			)
-#for cmd in "${commands[@]}"; do
-#	sleep 1
-#	eval "command '$cmd'"
-#	echo "command '$cmd'"
-#done
+send_string "\n"
 ############################################################################
 
 
@@ -184,6 +170,5 @@ xml_content="<domain type='kvm'>
     </interface>
   </devices>
 </domain>"
-echo $xml_content > ~/$vm_dir_name/$install_dir_name/domain.xml
 ############################################################################
  
