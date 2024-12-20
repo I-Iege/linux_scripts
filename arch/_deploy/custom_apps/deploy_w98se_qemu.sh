@@ -172,3 +172,8 @@ xml_content="<domain type='kvm'>
 </domain>"
 ############################################################################
  
+# SHCD URL
+# http://ftp.lyx.org/pub/freedos/files/dos/shsucdx/ellis/shcdx33f.zip
+
+# Security Disk ISO URL
+# https://ia800801.us.archive.org/34/items/WULOS/Security9_enu_15.iso
