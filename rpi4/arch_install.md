@@ -6,6 +6,7 @@ Execute <b>lsblk</b> and check which drive is your memory card:
 
 
 In my case it is a 128 Gb Memory Card as <b>/dev/sda</b>  
+Replace sdX with your Drive Letter and execute the script to prepare your memory card:  
 ```sh
 echo "valami"
 ```
