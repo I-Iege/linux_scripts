@@ -35,6 +35,7 @@ Customize Look and Feel
     - Desktop Effects
         - Magic Lamp
         - Blur
+- Plasma Style -> Utterly Round
 - Splash Screen -> Get New -> Arch
 - Login Screen -> Get New -> Utterly Sweet
 - Screen Locking -> Never
