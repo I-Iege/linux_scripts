@@ -4,7 +4,7 @@
 
 Install the Bare Minimum for KDE
 
-    pacman -S plasma-desktop plasma-workspace plasma-framework5 sddm sddm-kcm
+    pacman -S plasma-desktop plasma-workspace plasma-framework5 plasma-nm plasma-pa konsole firefox sddm sddm-kcm 
   
 Enable Display Manager & NetworkManager
 
