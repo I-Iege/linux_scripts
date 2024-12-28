@@ -15,7 +15,7 @@ Enable Display Manager & NetworkManager
 
 Install Desktop Apps
 
-    pacman -S dolphin packagekit-qt6 discover kscreen gwenview gedit kinfocenter spectacle ktorrent ark p7zip unrar
+    pacman -S dolphin flatpak discover kscreen gwenview gedit kinfocenter spectacle ktorrent ark p7zip unrar
 
 Install Partitioning Tools
 
