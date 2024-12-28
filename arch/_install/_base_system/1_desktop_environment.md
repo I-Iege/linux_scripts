@@ -9,7 +9,8 @@ Install the Bare Minimum for KDE
 Enable Display Manager & NetworkManager
 
     systemctl enable sddm
-    systemctl enable NetworkManager  
+    systemctl enable NetworkManager
+    exit
     reboot
 
 Install Desktop Apps
@@ -25,11 +26,6 @@ Setup Bluetooth
 
     pacman -S bluez bluez-utils bluedevil
     systemctl enable bluetooth
-
-Unchroot and reboot
-
-    exit
-    reboot
 
 Customize Look and Feel
 
