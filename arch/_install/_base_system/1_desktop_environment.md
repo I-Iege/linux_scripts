@@ -12,10 +12,14 @@ Enable Display Manager & NetworkManager
     systemctl enable NetworkManager  
     reboot
 
-Install very important packages
+Install Desktop Apps
 
-    pacman -S dolphin packagekit-qt6 discover kscreen gwenview gedit kinfocenter spectacle ktorrent ark p7zip unrar ntfs-3g dosfstools gparted
+    pacman -S dolphin packagekit-qt6 discover kscreen gwenview gedit kinfocenter spectacle ktorrent ark p7zip unrar
     reboot
+
+Install Partitioning Tools
+
+    ntfs-3g dosfstools gparted  
   
 Setup Bluetooth
 
