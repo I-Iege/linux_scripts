@@ -19,7 +19,7 @@ Install Desktop Apps
 
 Install Partitioning Tools
 
-    ntfs-3g dosfstools gparted  
+    pacman -S gparted ntfs-3g dosfstools  
   
 Setup Bluetooth
 
