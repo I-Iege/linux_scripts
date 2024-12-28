@@ -9,11 +9,12 @@ Install the Bare Minimum for KDE
 Enable Display Manager & NetworkManager
 
     systemctl enable sddm
-    systemctl enable NetworkManager
+    systemctl enable NetworkManager  
+    reboot
 
 Install very important packages
 
-    pacman -S dolphin konsole plasma-nm plasma-pa packagekit-qt6 discover kscreen gwenview gedit firefox kinfocenter spectacle ktorrent ark p7zip unrar ntfs-3g dosfstools gparted
+    pacman -S dolphin packagekit-qt6 discover kscreen gwenview gedit kinfocenter spectacle ktorrent ark p7zip unrar ntfs-3g dosfstools gparted
     reboot
   
 Setup Bluetooth
