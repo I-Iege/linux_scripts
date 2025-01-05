@@ -4,8 +4,7 @@
 
 Install the Bare Minimum for KDE
 
-    pacman -S plasma-desktop plasma-workspace xorg-xwayland plasma-nm plasma-pa konsole sddm sddm-kcm 
-    pacman -S firefox 
+    pacman -S plasma-desktop plasma-workspace plasma-nm plasma-pa konsole sddm sddm-kcm 
   
 Enable Display Manager & NetworkManager
 
@@ -16,7 +15,7 @@ Enable Display Manager & NetworkManager
 
 Install Desktop Apps
 
-    pacman -S dolphin flatpak discover kscreen gwenview gedit kinfocenter spectacle ktorrent ark p7zip unrar
+    pacman -S dolphin firefox flatpak discover kscreen gwenview gedit kinfocenter spectacle ktorrent ark p7zip unrar
 
 Install Partitioning Tools
 
