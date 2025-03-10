@@ -17,13 +17,6 @@ format_device() {
         return 1
     fi
 
-    # Ask for sudo password using dialog
-    password=$(dialog --backtitle "Device Formatting" --title "Authentication" --passwordbox "Enter your sudo password:" 10 50 3>&1 1>&2 2>&3)
-    if [ $? -ne 0 ]; then
-        dialog --backtitle "Device Formatting" --title "Cancelled" --msgbox "Authentication cancelled. No changes were made." 10 40
-        return 1
-    fi
-
     # Clear the terminal before starting the progress bar
     clear
 
@@ -47,8 +40,92 @@ format_device() {
 
     # Completion message
     dialog --backtitle "Device Formatting" --title "Success" --msgbox "Device /dev/$device has been formatted and all data erased." 10 50
+    
+    partition_device "$1"
 }
 
+
+partition_device() {
+
+# Check if a device is provided as an argument
+if [ -z "$1" ]; then
+    echo "Usage: $0 /dev/sdX"
+    echo "Please specify the device (e.g., /dev/sdb)."
+    exit 1
+fi
+
+DEVICE=/dev/$1
+
+# Confirm the device with the user
+echo "You are about to partition and format $DEVICE."
+echo "THIS WILL ERASE ALL DATA ON THE DEVICE!"
+read -p "Are you sure you want to proceed? (y/n): " confirm
+
+if [[ "$confirm" != "y" && "$confirm" != "Y" ]]; then
+    echo "Operation canceled."
+    exit 0
+fi
+
+# Step 1: Partition the SD card using fdisk
+echo "Partitioning /dev/$DEVICE..."
+sudo fdisk $DEVICE <<EOF
+o
+n
+p
+1
+
++200M
+t
+c
+n
+p
+2
+
+
+w
+
+EOF
+
+# Check if partitioning was successful
+if [ $? -ne 0 ]; then
+    echo "Partitioning failed. Exiting."
+    exit 1
+fi
+
+# Step 2: Create and mount the FAT filesystem
+echo "Creating FAT filesystem on ${DEVICE}1..."
+sudo mkfs.vfat ${DEVICE}1
+if [ $? -ne 0 ]; then
+    echo "Failed to create FAT filesystem. Exiting."
+    exit 1
+fi
+
+mkdir -p boot
+mount ${DEVICE}1 boot
+if [ $? -ne 0 ]; then
+    echo "Failed to mount ${DEVICE}1. Exiting."
+    exit 1
+fi
+
+# Step 3: Create and mount the ext4 filesystem
+echo "Creating ext4 filesystem on ${DEVICE}2..."
+sudo mkfs.ext4 ${DEVICE}2
+if [ $? -ne 0 ]; then
+    echo "Failed to create ext4 filesystem. Exiting."
+    exit 1
+fi
+
+mkdir -p root
+mount ${DEVICE}2 root
+if [ $? -ne 0 ]; then
+    echo "Failed to mount ${DEVICE}2. Exiting."
+    exit 1
+fi
+
+echo "Partitioning and formatting completed successfully."
+echo "FAT filesystem mounted at ./boot"
+echo "ext4 filesystem mounted at ./root"
+}
 
 # List block devices
 devices=$(lsblk -d -o NAME,SIZE | tail -n +2 | awk '{print $1, $2}')
