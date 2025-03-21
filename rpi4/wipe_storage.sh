@@ -48,7 +48,7 @@ prep_device() {
         sudo mkdir -p "$path"
     done
 
-    sudo mount ${DEVICE}1 /mnt/boot
+    sudo mount -t vfat ${DEVICE}1 /mnt/boot
     sudo mount ${DEVICE}2 /mnt/root
 
     echo "Device $DEVICE is ready!"
