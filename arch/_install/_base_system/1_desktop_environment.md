@@ -15,16 +15,16 @@ Enable Display Manager & NetworkManager
 
 Install Desktop Apps
 
-    pacman -S dolphin firefox flatpak discover kscreen gwenview gedit kinfocenter spectacle ktorrent ark p7zip unrar
+    sudo pacman -S dolphin firefox flatpak discover kscreen gwenview gedit kinfocenter spectacle ktorrent ark p7zip unrar
 
 Install Partitioning Tools
 
-    pacman -S gparted ntfs-3g dosfstools  
+    sudo pacman -S gparted ntfs-3g dosfstools  
   
 Setup Bluetooth
 
-    pacman -S bluez bluez-utils bluedevil
-    systemctl enable bluetooth
+    sudo pacman -S bluez bluez-utils bluedevil
+    sudo systemctl enable bluetooth
 
 Customize Look and Feel
 
