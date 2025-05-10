@@ -1,14 +1,12 @@
 # How to Configure Nameservers for Arch Linux
-
-1. List your connections:
-   
+ 
 &nbsp;&nbsp;
-##### Open the Virtual Machine Manager
+##### List available Connections
 ```sh
-virt-manager
+sudo nmcli con show
 ```
-###### *Note: You can also start 'Virtual Machine Manager' from your Launcher aka 'Start Menu'*
+![image](https://github.com/user-attachments/assets/93b5b28d-1e21-49f2-a3ea-8c4e94c24901)
 
 &nbsp;&nbsp;
-##### Virtual Machine Manager
-<img src="https://github.com/sonus89/linux_scripts/assets/10185202/f6fe9cab-2f94-4391-b207-73de690b90eb" width="25%" height="25%" />
+##### Copy the Connection Name
+<img src="https://github.com/user-attachments/assets/93b5b28d-1e21-49f2-a3ea-8c4e94c24901" width="25%" height="25%" />
