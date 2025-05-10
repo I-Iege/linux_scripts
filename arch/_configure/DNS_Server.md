@@ -17,7 +17,7 @@ sudo nmcli con mod "SWAT Surveillance Van" ipv4.dns "195.186.1.111 9.9.9.9"
 ```
 
 &nbsp;&nbsp;
-##### Set DNS Server for the Connection
+##### Tell NetworkManager to not automatically obtain DNS servers for this connection
 ```sh
 sudo nmcli con mod "SWAT Surveillance Van" ipv4.ignore-auto-dns yes
 ```
