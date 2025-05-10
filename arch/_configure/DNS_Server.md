@@ -29,3 +29,16 @@ sudo nmcli con down "SWAT Surveillance Van"
 sudo nmcli con up "SWAT Surveillance Van"
 ```
 
+&nbsp;&nbsp;
+##### Reboot your System
+```sh
+reboot
+```
+
+&nbsp;&nbsp;
+##### Verify the DNS Servers
+```sh
+sudo systemctl enable systemd-resolved
+sudo resolvectl status
+```
+
