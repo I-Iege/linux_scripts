@@ -42,3 +42,6 @@ sudo systemctl enable --now systemd-resolved
 sudo resolvectl status
 ```
 
+&nbsp;&nbsp;
+<img src="https://github.com/user-attachments/assets/16eb5261-3ad6-4b21-8483-49204c614284" width="50%" height="50%" />
+
