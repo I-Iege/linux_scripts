@@ -1,14 +1,14 @@
 # How to Configure Nameservers for Arch Linux
  
 &nbsp;&nbsp;
-##### List available Connections
+##### List Active Connections
 ```sh
-sudo nmcli con show
+sudo nmcli con show --active
 ```
 
 &nbsp;&nbsp;
 ##### Copy the Connection Name
-<img src="https://github.com/user-attachments/assets/93b5b28d-1e21-49f2-a3ea-8c4e94c24901" width="50%" height="50%" />
+<img src="https://github.com/user-attachments/assets/3b2f7cb9-ad7e-48c9-b081-ef21d784150d" width="50%" height="50%" />
 
 &nbsp;&nbsp;
 ##### Set DNS Server for the Connection
