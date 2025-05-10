@@ -13,7 +13,12 @@ sudo nmcli con show --active
 &nbsp;&nbsp;
 ##### Set DNS Server for the Connection
 ```sh
-sudo nmcli con mod "SWAT Surveillance Van" ipv4.dns "195.186.1.111 1.1.1.1"
+sudo nmcli con mod "SWAT Surveillance Van" ipv4.dns "195.186.1.111 9.9.9.9"
 ```
 
+&nbsp;&nbsp;
+##### Set DNS Server for the Connection
+```sh
+sudo nmcli con mod "SWAT Surveillance Van" ipv4.ignore-auto-dns yes
+```
 
