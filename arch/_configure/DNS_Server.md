@@ -25,7 +25,7 @@ sudo nmcli con mod "SWAT Surveillance Van" ipv4.ignore-auto-dns yes
 &nbsp;&nbsp;
 ##### Turn the Connection OFF and ON again
 ```sh
-sudo nmcli con down "YOUR_TETHERED_CONNECTION_NAME"
-sudo nmcli con up "YOUR_TETHERED_CONNECTION_NAME"
+sudo nmcli con down "SWAT Surveillance Van"
+sudo nmcli con up "SWAT Surveillance Van"
 ```
 
