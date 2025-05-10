@@ -38,7 +38,7 @@ reboot
 &nbsp;&nbsp;
 ##### Verify the DNS Servers
 ```sh
-sudo systemctl enable systemd-resolved
+sudo systemctl enable --now systemd-resolved
 sudo resolvectl status
 ```
 
