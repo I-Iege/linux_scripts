@@ -26,6 +26,10 @@ Setup Bluetooth
     sudo pacman -S bluez bluez-utils bluedevil
     sudo systemctl enable bluetooth
 
+Install Qt5-Webkit
+
+    sudo pacman -U https://archive.archlinux.org/packages/q/qt5-webkit/qt5-webkit-5.212.0alpha4-18-x86_64.pkg.tar.zst
+
 Customize Look and Feel
 
 - Firefox -> Settings -> General -> Dark
