@@ -58,3 +58,7 @@ Install yay Package Manager
     cd yay
     makepkg -si
 
+Install important AUR Packages
+
+    yay -S mkinitcpio-firmware
+    yay -S jdk
