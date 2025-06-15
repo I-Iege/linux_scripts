@@ -30,22 +30,6 @@ Install Qt5-Webkit
 
     sudo pacman -U https://archive.archlinux.org/packages/q/qt5-webkit/qt5-webkit-5.212.0alpha4-18-x86_64.pkg.tar.zst
 
-Customize Look and Feel
-
-- Firefox -> Settings -> General -> Dark
-- Customize KDE
-    - Global Theme -> Get New -> Download a Theme ( i.e. Utterly Sweet )
-    - Night Light
-    - Desktop Effects
-        - Magic Lamp
-        - Blur
-- Plasma Style -> Utterly Round
-- Splash Screen -> Get New -> Arch
-- Login Screen -> Get New -> Utterly Sweet
-- Screen Locking -> Never
-- Power Management -> Do Nothing
-- Konsole -> Settings -> Configure Konsole -> Profiles -> New -> OK -> Select new Profile -> Set as Default -> Edit -> Appearance -> Get New -> Select Color Scheme ( i.e. Utterly Sweet ) -> Install & Apply 
-
 Add Hotkey for Screenshot
 
     1. Open Spectacle
@@ -63,3 +47,19 @@ Install important AUR Packages
     yay -S mkinitcpio-firmware
     sudo mkinitcpio -P
     yay -S jdk
+
+Customize Look and Feel
+
+- Firefox -> Settings -> General -> Dark
+- Customize KDE
+    - Global Theme -> Get New -> Download a Theme ( i.e. Utterly Sweet )
+    - Night Light
+    - Desktop Effects
+        - Magic Lamp
+        - Blur
+- Plasma Style -> Utterly Round
+- Splash Screen -> Get New -> Arch
+- Login Screen -> Get New -> Utterly Sweet
+- Screen Locking -> Never
+- Power Management -> Do Nothing
+- Konsole -> Settings -> Configure Konsole -> Profiles -> New -> OK -> Select new Profile -> Set as Default -> Edit -> Appearance -> Get New -> Select Color Scheme ( i.e. Utterly Sweet ) -> Install & Apply 
