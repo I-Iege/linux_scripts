@@ -52,6 +52,7 @@ Install Wine for Gaming
 
     sudo sed -i '/^#\[multilib\]/{n;s/^#//;};/^\[multilib\]/s/^#//' /etc/pacman.conf
     sudo pacman -Syu
+    sudo pacman -S wine winetricks wine-gecko
 
 Customize Look and Feel
 
