@@ -47,6 +47,7 @@ Install important AUR Packages
     yay -S mkinitcpio-firmware
     sudo mkinitcpio -P
     yay -S jdk
+    yay -S wine-stable
 
 Customize Look and Feel
 
