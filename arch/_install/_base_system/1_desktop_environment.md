@@ -15,7 +15,7 @@ Enable Display Manager & NetworkManager
 
 Install Desktop Apps
 
-    sudo pacman -S dolphin firefox flatpak discover kscreen gwenview gedit kinfocenter spectacle ktorrent ark p7zip unrar
+    sudo pacman -S dolphin firefox chromium flatpak discover kscreen gwenview gedit kinfocenter spectacle ktorrent ark p7zip unrar
 
 Install Partitioning Tools
 
@@ -50,7 +50,7 @@ Install important AUR Packages
 
 Customize Look and Feel
 
-- Firefox -> Settings -> General -> Dark
+- Firefox / Chromium -> Settings -> General -> Dark
 - Customize KDE
     - Global Theme -> Get New -> Download a Theme ( i.e. Utterly Sweet )
     - Night Light
