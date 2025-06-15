@@ -61,4 +61,5 @@ Install yay Package Manager
 Install important AUR Packages
 
     yay -S mkinitcpio-firmware
+    sudo mkinitcpio -P
     yay -S jdk
