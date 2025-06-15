@@ -47,7 +47,11 @@ Install important AUR Packages
     yay -S mkinitcpio-firmware
     sudo mkinitcpio -P
     yay -S jdk
-    yay -S wine-stable
+
+Install Wine for Gaming
+
+    sudo sed -i '/^#\[multilib\]/{n;s/^#//;};/^\[multilib\]/s/^#//' /etc/pacman.conf
+    sudo pacman -Syu
 
 Customize Look and Feel
 
