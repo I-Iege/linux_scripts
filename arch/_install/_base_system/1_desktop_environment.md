@@ -19,7 +19,7 @@ Install Desktop Apps
 
 Install Partitioning Tools
 
-    sudo pacman -S gparted ntfs-3g dosfstools  
+    sudo pacman -S gparted ntfs-3g dosfstools exfatprogs
   
 Setup Bluetooth
 
