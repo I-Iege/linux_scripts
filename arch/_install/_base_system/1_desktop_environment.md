@@ -13,6 +13,10 @@ Enable Display Manager & NetworkManager
     exit
     reboot
 
+Install Basic Tools
+
+    sudo pacman -S usbutils git base-devel openssh wget vi
+
 Install Desktop Apps
 
     sudo pacman -S dolphin firefox chromium flatpak discover kscreen gwenview gedit kinfocenter spectacle ktorrent ark p7zip unrar
