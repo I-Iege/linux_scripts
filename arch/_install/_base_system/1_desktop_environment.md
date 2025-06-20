@@ -4,7 +4,7 @@
 
 Install the Bare Minimum for KDE
 
-    pacman -S xorg xorg-xinit xorg-server plasma-desktop plasma-workspace xorg-xwayland plasma-nm plasma-pa konsole sddm sddm-kcm 
+    pacman -S --noconfirm xorg xorg-xinit xorg-server plasma-desktop plasma-workspace xorg-xwayland plasma-nm plasma-pa konsole sddm sddm-kcm 
   
 Enable Display Manager & NetworkManager
 
@@ -15,24 +15,24 @@ Enable Display Manager & NetworkManager
 
 Install Basic Tools
 
-    sudo pacman -S usbutils git base-devel openssh wget vi
+    sudo pacman -S --noconfirm usbutils git base-devel openssh wget vi
 
 Install Desktop Apps
 
-    sudo pacman -S dolphin firefox chromium flatpak discover kscreen gwenview gedit kinfocenter spectacle ktorrent ark p7zip unrar
+    sudo pacman -S --noconfirm dolphin firefox chromium flatpak discover kscreen gwenview gedit kinfocenter spectacle ktorrent ark p7zip unrar
 
 Install Partitioning Tools
 
-    sudo pacman -S gparted ntfs-3g dosfstools exfatprogs
+    sudo pacman -S --noconfirm gparted ntfs-3g dosfstools exfatprogs
   
 Setup Bluetooth
 
-    sudo pacman -S bluez bluez-utils bluedevil
-    sudo systemctl enable bluetooth
+    sudo pacman -S --noconfirm bluez bluez-utils bluedevil
+    sudo systemctl enable --now bluetooth
 
 Install Qt5-Webkit
 
-    sudo pacman -U https://archive.archlinux.org/packages/q/qt5-webkit/qt5-webkit-5.212.0alpha4-18-x86_64.pkg.tar.zst
+    sudo pacman -U --noconfirm  https://archive.archlinux.org/packages/q/qt5-webkit/qt5-webkit-5.212.0alpha4-18-x86_64.pkg.tar.zst
 
 Add Hotkey for Screenshot
 
@@ -56,7 +56,7 @@ Install Wine for Gaming
 
     sudo sed -i '/^#\[multilib\]/,/^#Include = \/etc\/pacman.d\/mirrorlist/s/^#//' /etc/pacman.conf
     sudo pacman -Syu
-    sudo pacman -S wine winetricks wine-gecko
+    sudo pacman -S --noconfirm wine winetricks wine-gecko
 
 Customize Look and Feel
 
