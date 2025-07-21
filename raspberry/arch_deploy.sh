@@ -1,22 +1,30 @@
 #!/bin/bash
 
-####################################################################################################################
-###														####
-###	Arch Linux Deploy Script for Raspberry Pi 4 / 4B / 5							####
-###	Author: Máté Gál											####
-###	Contact: gal.mateo@protonmail.com									####
-###														####
-###	Usage Sample:												####
-###	sudo sh arch_deploy.sh sdc										####
-###														####
-####################################################################################################################
-
+############################################################################################################################
+###															####
+###	Arch Linux Deploy Script for Raspberry Pi 4 / 4B / 5								####
+###	Author: Máté Gál												####
+###	Contact: gal.mateo@protonmail.com										####
+###															####
+###	Usage Sample:													####
+###	sudo sh arch_deploy.sh sdc											####
+###															####
+############################################################################################################################
+														
 
 check_packages() 
 {
 	# Check Prerequisites
 	print_color "Checking prerequisites:" "green"
-	package_list=("lsof" "gptfdisk" "util-linux" "parted" "libarchive")
+	package_list=(
+	# Package Name	# Commands
+	"base-devel"	# awk, xargs, mkdir, echo, clear, lsblk, swapoff, kill, umount, wipefs, blockdev, mount, grep
+	"lsof"		# lsof
+	"gptfdisk"	# sgdisk
+	"parted"	# parted
+	"dosfstools"	# mkfs.vfat
+	"e2fsprogs"	# mkfs.ext4	
+	)
 	non_installed_packages=()
 	all_installed=true
 
@@ -44,7 +52,7 @@ check_packages()
 	fi
 }
 
-####################################################################################################################
+############################################################################################################################
 
 check_device_exist()
 {
@@ -57,8 +65,7 @@ check_device_exist()
 		for device in $ALL_DEVICES; do
 			print_color "$device" "yellow"
 		done
-		script_name=$0
-		print_color "Usage Sample: sudo $script_name sda\n" "blue"
+		print_color "Usage Sample: sudo $0 sda\n" "blue"
 		exit 1 # Script will exit here if device is invalidS
 	fi
 }
@@ -67,6 +74,10 @@ swap_off()
 {
 	print_color "Turning Swap Off..." "blue"
 	sudo swapoff ${DEVICE}* 2>/dev/null
+	# Check if swap is actually turned off
+	if [ -n "$(swapon --show | grep $DEVICE)" ]; then
+		print_color "Could not turn off swap on $DEVICE" "red"
+	fi
 }
 
 kill_processes()
@@ -122,8 +133,8 @@ format_partitions()
 mount_partitions()
 {
 	print_color "Creating Mount Points..." "blue"
-	root=/mnt/rpi_root
-	boot=/mnt/rpi_boot
+	root=/mnt/root
+	boot=/mnt/boot
 	for path in $boot $root; do
 		sudo mkdir -p "$path"
 	done
@@ -145,14 +156,14 @@ prep_device()
 	mount_partitions $DEVICE
 }
 
-####################################################################################################################
+############################################################################################################################
 
 download_image()
 {
 	print_color "\nDownloading Arch Linux Image:" "green"
 }
 
-####################################################################################################################
+############################################################################################################################
 
 print_color()
 {
@@ -181,20 +192,25 @@ print_color()
 	fi
 }
 
-####################################################################################################################
+print_title()
+{
+	print_color "###################################################################################" "green"
+	print_color "### Welcome to the Arch Linux Deploy Script for Raspberry Pi 4 / 4B / 5!\t###" "green"
+	print_color "### Usage Sample: sudo sh $0 sda\t\t\t\t\t###" "green"	
+	print_color "### Author: Máté Gál\t\tContact: gal.mateo@protonmail.com\t\t###" "green"
+	print_color "###################################################################################\n" "green"
+}
+
+############################################################################################################################
 
 main()
 {
 	clear
-	print_color "###########################################################################" "green"
-	print_color "### Welcome to the Arch Linux Deploy Script for Raspberry Pi 4 and 4B!\t###" "green"
-	print_color "### Usage Sample: sudo sh $0 sda\t\t\t\t###" "green"	
-	print_color "### Author: Máté Gál\t\tContact: gal.mateo@protonmail.com\t###" "green"
-	print_color "###########################################################################\n" "green"
+	print_title
 	check_packages
 	DEVICE=/dev/$1
 	prep_device $DEVICE
-	download_image
+	# download_image
 	
 }
 
