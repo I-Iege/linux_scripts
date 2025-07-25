@@ -111,6 +111,7 @@ unmount_partitions()
 	mount_points=$(lsblk -n -o MOUNTPOINT $DEVICE | grep -v "^$")
 	if [ "$mount_points" ]; then
 		print_color "Could not unmount all partitions on: $DEVICE!" "red"
+		exit 1
 	fi
 }
 
