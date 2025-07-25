@@ -17,7 +17,7 @@ check_packages()
 	# Check Prerequisites
 	print_color "Checking prerequisites:" "green"
 	package_list=(
-	# Package Name	# Commands
+	# Package Name	# Necessary Commands
 	"base-devel"	# awk, xargs, mkdir, echo, clear, lsblk, swapoff, kill, umount, wipefs, blockdev, mount, grep
 	"lsof"		# lsof
 	"gptfdisk"	# sgdisk
@@ -36,7 +36,6 @@ check_packages()
 			all_installed=false # A package is missing, so set the flag to false
 		fi
 	done
-
 	# Evaluation / Installation
 	if "$all_installed"; then
 		print_color "All prerequisites satisfied. Nothing to do here." "blue"
@@ -48,8 +47,15 @@ check_packages()
 			print_color "Installing $package..." "blue"
 			sudo pacman -S --noconfirm "$package" > /dev/null
 		done
-		
 	fi
+	
+	# Check if packages had been successfully installed
+	for package in "${package_list[@]}"; do
+		if ! pacman -Q "$package" &> /dev/null; then
+			print_color "Could not install one or more packages!" "red"
+			exit 1
+		fi
+	done
 }
 
 ############################################################################################################################
@@ -57,16 +63,16 @@ check_packages()
 check_device_exist()
 {
 	print_color "\nPreparing device: $DEVICE" "green"
-	# Check if the device exists
+	# Check if device exists
 	if [[ ! -b "$DEVICE" ]]; then	
 		print_color "Error: Device $DEVICE does not exist" "red"
 		print_color "Available devices: " "yellow"
-		ALL_DEVICES=$(lsblk -dno NAME)
-		for device in $ALL_DEVICES; do
-			print_color "$device" "yellow"
+		ALL_DEVICES=$(lsblk -o NAME,SIZE -n -d | awk '{print $1 " ( " $2 " )"}')
+		echo "$ALL_DEVICES" | while IFS= read -r line; do
+			print_color "$line" "yellow"
 		done
 		print_color "Usage Sample: sudo $0 sda\n" "blue"
-		exit 1 # Script will exit here if device is invalidS
+		exit 1
 	fi
 }
 
@@ -74,16 +80,24 @@ swap_off()
 {
 	print_color "Turning Swap Off..." "blue"
 	sudo swapoff ${DEVICE}* 2>/dev/null
-	# Check if swap is actually turned off
+	# Check if swap is actually turned off on device
 	if [ -n "$(swapon --show | grep $DEVICE)" ]; then
 		print_color "Could not turn off swap on $DEVICE" "red"
+		exit 1
 	fi
 }
 
 kill_processes()
 {
 	print_color "Killing processes..." "blue"
-	sudo lsof +f -- ${DEVICE}* 2>/dev/null | awk 'NR>1 {print $2}' | xargs -r sudo kill -9 >/dev/null 2>&1
+	sudo lsof -- ${DEVICE}* 2>/dev/null | awk 'NR>1 {print $2}' | xargs -r sudo kill -9 >/dev/null 2>&1
+	sleep 1 # Wait a sec to let processes to be killed
+	# Check if processes are actually killed
+	LSOF_OUTPUT=$(lsof $DEVICE 2>/dev/null | awk 'NR>1')
+	if [ -n	 "$LSOF_OUTPUT" ]; then
+		print_color "Error: Could not kill all processes using $DEVICE" "red"
+		exit 1
+	fi
 }
 
 unmount_partitions()
@@ -93,7 +107,6 @@ unmount_partitions()
 	for partition in $partitions; do
 		sudo umount -l $partition > /dev/null 2>&1
 	done
-	
 	# Check if they are actually unmounted
 	mount_points=$(lsblk -n -o MOUNTPOINT $DEVICE | grep -v "^$")
 	if [ "$mount_points" ]; then
@@ -138,7 +151,6 @@ mount_partitions()
 	for path in $boot $root; do
 		sudo mkdir -p "$path"
 	done
-
 	print_color "Mounting Partitions..." "blue"
 	sudo mount -t vfat ${DEVICE}1 $boot
 	sudo mount ${DEVICE}2 $root
