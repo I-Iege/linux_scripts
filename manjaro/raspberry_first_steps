@@ -52,7 +52,6 @@ Raspberry Pi 4 Setup for Manjaro Minimal:
     pacman-mirrors --country Switzerland 
     ( or Ukraine ... ) 
   - Change mirrorlist ( due to SSL certificate )
-    Note: You can skip this step if the raspberry is not connected to Schindler net
     - Open mirrorlist:
       nano /etc/pacman.d/mirrorlist 
     - Change "https" to "http" in all available URLs
@@ -99,7 +98,6 @@ Raspberry Pi 4 Setup for Manjaro Minimal:
     pacman -Sy git xterm base-devel 
   - As "cubetest" user clone the repository
     git clone -c http.sslVerify=false http://github.com/azalinux/realvnc-server-aarch64-manjaro
-    Note: The '-c http.sslVerify=false' part is only needed on Schindler net
   - As "cubetest" user open cloned folder and execute:
     makepkg -si
     Note: This will create a *.pkg.tar.zst file 
@@ -125,13 +123,11 @@ Raspberry Pi 4 Setup for Manjaro Minimal:
       - Change resolution to 1920x1080
 
 -> Python Setup
-  ! WARNING !
-  Connect to a non-Schindler network to perform this in a proper way!
   - Update / Install python & pip :
     pacman -Sy python python-pip			   		
   - Test (upgrade) pip
     python -m pip install --upgrade pip			
-    Note: On a Schindler network you can use this alternatively:
+	From a closed network:
     python -m pip install --upgrade --trusted-host files.pythonhosted.org --trusted-host pypi.org --trusted-host pypi.python.org pip	
   - Install OpenCV and Numpy for Image Recognition 
     pip install numpy opencv-python imutils
