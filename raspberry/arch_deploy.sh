@@ -24,6 +24,8 @@ check_packages()
 	"parted"	# parted
 	"dosfstools"	# mkfs.vfat
 	"e2fsprogs"	# mkfs.ext4	
+	"pv"		# pv ( progress bar )
+	"uboot-tools"	# mkscr
 	)
 	non_installed_packages=()
 	all_installed=true
@@ -91,7 +93,7 @@ kill_processes()
 {
 	print_color "Killing processes..." "blue"
 	sudo lsof -- ${DEVICE}* 2>/dev/null | awk 'NR>1 {print $2}' | xargs -r sudo kill -9 >/dev/null 2>&1
-	sleep 1 # Wait a sec to let processes to be killed
+	sleep 1 # Wait a sec to let processes to be dead
 	# Check if processes are actually killed
 	LSOF_OUTPUT=$(lsof $DEVICE 2>/dev/null | awk 'NR>1')
 	if [ -n	 "$LSOF_OUTPUT" ]; then
@@ -173,9 +175,110 @@ prep_device()
 
 download_image()
 {
-	print_color "\nDownloading Arch Linux Image:" "green"
+
+	local url='http://os.archlinuxarm.org/os/ArchLinuxARM-rpi-aarch64-latest.tar.gz'
+	local filename=$(basename "$url")
+
+	if [ -f "$filename" ]; then
+		print_color "File already exists. Skipping download." "blue"
+	else
+		print_color "Downloading Image File..." "blue"
+		if ! wget -q --show-progress -O "$filename" "$url"; then
+			print_color "Error: Download failed. Deleting incomplete file..." "red"
+			rm -f "$filename"
+		fi
+	fi
 }
 
+extract_image()
+{
+	print_color "Extracting Image..." "blue"
+	local root_partition="/mnt/root"
+	local boot_partition="/mnt/boot"
+	sudo sh -c "pv ArchLinuxARM-rpi-aarch64-latest.tar.gz | bsdtar -xzf - -C $root_partition"
+	print_color "Syncing content..." "blue"
+	sync
+	print_color "Copying boot Partition..." "blue"
+	sudo mv $root_partition/boot/* $boot_partition
+}
+
+patch_boot()
+{
+	print_color "Patching the Boot Config Files..." "blue"
+	local boot_partition="/mnt/boot"
+	cd $boot_partition
+	sudo sed -i 's/booti ${kernel_addr_r} ${ramdisk_addr_r}:${filesize} ${fdt_addr_r};/booti ${kernel_addr_r} ${ramdisk_addr_r}:${filesize} ${fdt_addr};/' boot.txt
+	sudo sed -i 's/booti ${kernel_addr_r} - ${fdt_addr_r};/booti ${kernel_addr_r} - ${fdt_addr};/' boot.txt
+	sudo ./mkscr > /dev/null
+}
+
+post_install_script()
+{
+	print_color "Deploy Post Install Script" "blue"
+	local root_partition='/mnt/root'
+	
+	post_install="
+	# Updating Keyrings
+	
+	loadkeys hu
+	wifi-menu
+	
+	pacman-key --init
+	pacman-key --populate archlinuxarm
+	pacman -Syyu --noconfirm
+
+	# Configuring Sudoers
+	pacman -S --noconfirm sudo
+	sudo usermod -aG wheel alarm
+	sudo echo '%wheel ALL=(ALL:ALL) ALL' | sudo tee -a /etc/sudoers
+
+	# Installing Graphical Environment and Basic Packages
+	pacman -S --noconfirm --disable-sandbox usbutils pciutils openssh wget git base-devel
+	pacman -S --noconfirm --disable-sandbox xorg xorg-server xorg-xinit
+	pacman -S --noconfirm --disable-sandbox xfce4 xfce4-goodies ly firefox
+	systemctl enable ly
+
+	# Patching Video Driver	
+	# pacman -Rdd --noconfirm linux-firmware
+	# pacman -R --noconfirm linux-firmware-nvidia
+	# pacman -S --noconfirm mesa mesa-utils mesa-demos vulkan-broadcom vulkan-mesa-layers
+	# pacman -S --noconfirm linux-firmware
+	
+	# Setting Timezone / Timesync / Hostname
+	localectl set-locale LANG=en_US.UTF-8
+	localectl set-keymap hu
+	locale-gen
+	timedatectl set-timezone Europe/Zurich
+	pacman -S --noconfirm ntp
+	systemctl enable --now ntpd.service
+	timedatectl set-ntp true
+	hostnamectl set-hostname alarm
+
+	# Setting Up Network-Manager
+	# pacman -S --noconfirm networkmanager network-manager-applet wpa_supplicant
+	# systemctl enable --now NetworkManager
+
+	# Setting up Audio
+	# pacman -S --noconfirm pipewire pipewire-pulse pipewire-jack wireplumber
+	# systemctl --user enable --now pipewire.service
+	# systemctl --user enable --now pipewire.socket
+	# systemctl --user enable --now wireplumber.service
+	
+	reboot
+	"
+
+	echo "$post_install" > $root_partition/root/post_install.sh
+}
+
+deploy_arch()
+{
+	print_color "\nDeploying Arch Linux ARM:" "green"
+	download_image
+	extract_image
+	patch_boot
+	post_install_script
+	unmount_partitions $DEVICE
+}
 ############################################################################################################################
 
 print_color()
@@ -192,7 +295,7 @@ print_color()
 		"green")   color_code="\033[0;32m" ;;
 		"yellow")  color_code="\033[0;33m" ;;
 		"blue")    color_code="\033[0;34m" ;;
-		*)         
+		*)
 		echo "Warning: Unsupported color '$color_name'. Using default (no color)." >&2
 		color_code=""
 		;;
@@ -201,7 +304,7 @@ print_color()
 	if [[ -n "$color_code" ]]; then
 		echo -e "${color_code}${text}\033[0m"
 	else
-		echo "$text" # Print without color if code is empty (unsupported color)
+		echo "$text"
 	fi
 }
 
@@ -223,8 +326,8 @@ main()
 	check_packages
 	DEVICE=/dev/$1
 	prep_device $DEVICE
-	# download_image
-	
+	deploy_arch $DEVICE
+	print_color "\nDone. \n(1) Remove media!\n(2) Insert media to RPi!\n(3) Login user: root / pass: root\n(4) Execute: sh post_install.sh" "green"
 }
 
 main $1
