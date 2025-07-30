@@ -214,60 +214,120 @@ patch_boot()
 
 post_install_script()
 {
-	print_color "Deploy Post Install Script" "blue"
-	local root_partition='/mnt/root'
+# Note: systemctl enable --now does not work.
+# Use systemctl enable instead.
+
+print_color "Deploying Post Install Script..." "blue"
+local root_partition='/mnt/root'
+
+# Heredoc which contains the post install script
+cat << 'EOF' > $root_partition/root/post_install.sh
+#!/bin/bash
+
+execute_command() 
+{
+	local command_to_run="$1"
+
+	echo "Executing: $command_to_run"
+	eval "$command_to_run"
+
+	if [ $? -ne 0 ]; then
+		print_color 'ERROR: Command $command_to_run failed.' 'red'
+		exit 1
+	fi
+}
+
+print_color()
+{
+	# Pretty print with colors in the Terminal
+	local text="$1"
+	local color_name="$2"
+	local color_code=""
+
+	# Define ANSI color codes
+	case "$color_name" in
+		"black")   color_code="\033[0;30m" ;;
+		"red")     color_code="\033[0;31m" ;;
+		"green")   color_code="\033[0;32m" ;;
+		"yellow")  color_code="\033[0;33m" ;;
+		"blue")    color_code="\033[0;34m" ;;
+		*)
+		echo "Warning: Unsupported color '$color_name'. Using default (no color)." >&2
+		color_code=""
+		;;
+	esac
+
+	if [[ -n "$color_code" ]]; then
+		echo -e "${color_code}${text}\033[0m"
+	else
+		echo "$text"
+	fi
+}
+
+# Setting Keyboard to Hungarian
+execute_command 'loadkeys hu'
+
+# Starting Wifi TUI
+wifi-menu
+
+# Generating Keys for Pacmanf
+execute_command 'pacman-key --init'
+execute_command 'pacman-key --populate archlinuxarm'
+
+# Updating Package List
+execute_command 'pacman -Sy --noconfirm'
+
+# Configuring Sudoers Group
+execute_command 'pacman -S --noconfirm sudo'
+execute_command 'usermod -aG wheel alarm'
+execute_command 'echo "%wheel ALL=(ALL:ALL) ALL" | tee -a /etc/sudoers'
+
+# Setting up SSH Connectioná
+execute_command 'pacman -S --noconfirm openssh'
+execute_command 'systemctl enable sshd'
+
+# Setting Timezone / Timesync / Keymap / Hostname
+execute_command 'localectl set-locale LANG=en_US.UTF-8'
+execute_command 'localectl set-keymap hu'
+execute_command 'locale-gen'
+execute_command 'timedatectl set-timezone Europe/Zurich'
+execute_command 'pacman -S --noconfirm ntp'
+execute_command 'systemctl enable ntpd.service'
+execute_command 'timedatectl set-ntp true'
+execute_command 'hostnamectl set-hostname alarm'
+
+# Patching Video Driver	
+# pacman -Rdd --noconfirm linux-firmware
+# pacman -R --noconfirm linux-firmware-nvidia
+# pacman -R --noconfirm xf86-video-vesa
+# MESA Drivers
+# pacman -S --noconfirm mesa mesa-utils mesa-demos 
+# Vulkan Tools
+# pacman -S --noconfirm vulkan-broadcom vulkan-mesa-layers vulkan-tools vulkan-headers
+# pacman -S --noconfirm linux-firmware
+# Installing Basic Packages
+# pacman -S --noconfirm --disable-sandbox usbutils pciutils wget git base-devel cmake
+
+# Setting Up Network-Manager
+# pacman -S --noconfirm networkmanager network-manager-applet wpa_supplicant
+# systemctl enable --now NetworkManager
+
+# Setting up Audio
+# pacman -S --noconfirm pipewire pipewire-pulse pipewire-jack wireplumber
+# systemctl --user enable --now pipewire.service
+# systemctl --user enable --now pipewire.socket
+# systemctl --user enable --now wireplumber.service
+
+# Graphical Environment
+# pacman -S --noconfirm lxqt xfce4-terminal pcmanfm-qt
+# pacman -S --noconfirm labwc xorg-xwayland ly firefox
+# pacman -S --noconfirm lxqt-wayland-session
+# systemctl enable ly
+
+reboot
+EOF
 	
-	post_install="
-	# Updating Keyrings
-	
-	loadkeys hu
-	wifi-menu
-	
-	pacman-key --init
-	pacman-key --populate archlinuxarm
-	pacman -Syyu --noconfirm
-
-	# Configuring Sudoers
-	pacman -S --noconfirm sudo
-	sudo usermod -aG wheel alarm
-	sudo echo '%wheel ALL=(ALL:ALL) ALL' | sudo tee -a /etc/sudoers
-
-	# Installing Graphical Environment and Basic Packages
-	pacman -S --noconfirm --disable-sandbox usbutils pciutils openssh wget git base-devel
-	pacman -S --noconfirm --disable-sandbox xorg xorg-server xorg-xinit
-	pacman -S --noconfirm --disable-sandbox xfce4 xfce4-goodies ly firefox
-	systemctl enable ly
-
-	# Patching Video Driver	
-	# pacman -Rdd --noconfirm linux-firmware
-	# pacman -R --noconfirm linux-firmware-nvidia
-	# pacman -S --noconfirm mesa mesa-utils mesa-demos vulkan-broadcom vulkan-mesa-layers
-	# pacman -S --noconfirm linux-firmware
-	
-	# Setting Timezone / Timesync / Hostname
-	localectl set-locale LANG=en_US.UTF-8
-	localectl set-keymap hu
-	locale-gen
-	timedatectl set-timezone Europe/Zurich
-	pacman -S --noconfirm ntp
-	systemctl enable --now ntpd.service
-	timedatectl set-ntp true
-	hostnamectl set-hostname alarm
-
-	# Setting Up Network-Manager
-	# pacman -S --noconfirm networkmanager network-manager-applet wpa_supplicant
-	# systemctl enable --now NetworkManager
-
-	# Setting up Audio
-	# pacman -S --noconfirm pipewire pipewire-pulse pipewire-jack wireplumber
-	# systemctl --user enable --now pipewire.service
-	# systemctl --user enable --now pipewire.socket
-	# systemctl --user enable --now wireplumber.service
-	
-	reboot
-	"
-
-	echo "$post_install" > $root_partition/root/post_install.sh
+	chmod +x $root_partition/root/post_install.sh
 }
 
 deploy_arch()
