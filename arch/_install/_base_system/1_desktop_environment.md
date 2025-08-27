@@ -15,7 +15,7 @@ Enable Display Manager & NetworkManager
 
 Install Basic Tools
 
-    sudo pacman -S --noconfirm usbutils git base-devel openssh wget vi
+    sudo pacman -S --noconfirm usbutils git base-devel openssh wget vi less
 
 Install Desktop Apps
 
