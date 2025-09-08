@@ -234,8 +234,8 @@ wifi-menu
 pacman-key --init
 pacman-key --populate archlinuxarm
 
-# Updating Package List
-pacman -Sy --noconfirm
+# Updating System
+pacman -Syyu --noconfirm
 
 # Configuring Sudoers Group
 pacman -S --noconfirm sudo
