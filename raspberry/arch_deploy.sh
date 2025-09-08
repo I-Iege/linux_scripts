@@ -224,77 +224,37 @@ local root_partition='/mnt/root'
 cat << 'EOF' > $root_partition/root/post_install.sh
 #!/bin/bash
 
-execute_command() 
-{
-	local command_to_run="$1"
-
-	echo "Executing: $command_to_run"
-	eval "$command_to_run"
-
-	if [ $? -ne 0 ]; then
-		print_color 'ERROR: Command $command_to_run failed.' 'red'
-		exit 1
-	fi
-}
-
-print_color()
-{
-	# Pretty print with colors in the Terminal
-	local text="$1"
-	local color_name="$2"
-	local color_code=""
-
-	# Define ANSI color codes
-	case "$color_name" in
-		"black")   color_code="\033[0;30m" ;;
-		"red")     color_code="\033[0;31m" ;;
-		"green")   color_code="\033[0;32m" ;;
-		"yellow")  color_code="\033[0;33m" ;;
-		"blue")    color_code="\033[0;34m" ;;
-		*)
-		echo "Warning: Unsupported color '$color_name'. Using default (no color)." >&2
-		color_code=""
-		;;
-	esac
-
-	if [[ -n "$color_code" ]]; then
-		echo -e "${color_code}${text}\033[0m"
-	else
-		echo "$text"
-	fi
-}
-
 # Setting Keyboard to Hungarian
-execute_command 'loadkeys hu'
+loadkeys hu
 
 # Starting Wifi TUI
 wifi-menu
 
 # Generating Keys for Pacmanf
-execute_command 'pacman-key --init'
-execute_command 'pacman-key --populate archlinuxarm'
+pacman-key --init
+pacman-key --populate archlinuxarm
 
 # Updating Package List
-execute_command 'pacman -Sy --noconfirm'
+pacman -Sy --noconfirm
 
 # Configuring Sudoers Group
-execute_command 'pacman -S --noconfirm sudo'
-execute_command 'usermod -aG wheel alarm'
-execute_command 'echo "%wheel ALL=(ALL:ALL) ALL" | tee -a /etc/sudoers'
+pacman -S --noconfirm sudo
+usermod -aG wheel alarm
+echo "%wheel ALL=(ALL:ALL) ALL" | tee -a /etc/sudoers
 
 # Setting up SSH Connectioná
-execute_command 'pacman -S --noconfirm openssh'
-execute_command 'systemctl enable sshd'
+pacman -S --noconfirm openssh
+systemctl enable sshd
 
 # Setting Timezone / Timesync / Keymap / Hostname
-execute_command 'localectl set-locale LANG=en_US.UTF-8'
-execute_command 'localectl set-keymap hu'
-execute_command 'locale-gen'
-execute_command 'timedatectl set-timezone Europe/Zurich'
-execute_command 'pacman -S --noconfirm ntp'
-execute_command 'systemctl enable ntpd.service'
-execute_command 'timedatectl set-ntp true'
-execute_command 'hostnamectl set-hostname alarm'
+localectl set-locale LANG=en_US.UTF-8
+localectl set-keymap hu
+locale-gen
+timedatectl set-timezone Europe/Zurich
+pacman -S --noconfirm ntp
+systemctl enable ntpd.service
+timedatectl set-ntp true
+hostnamectl set-hostname alarm
 
 # Patching Video Driver	
 # pacman -Rdd --noconfirm linux-firmware
